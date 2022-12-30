@@ -4,9 +4,12 @@ var app = express();
 var alert = require('alert');
 var session = require('express-session');
 var MongoClient = require('mongodb').MongoClient;
+var PORT = process.env.PORT || 3000;
 
 module.exports = app;
-app.listen(3000);
+app.listen(PORT, () => {
+  console.log('server started on port ' , PORT);
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
