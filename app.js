@@ -8,7 +8,7 @@ var PORT = process.env.PORT || 3000;
 
 module.exports = app;
 app.listen(PORT, () => {
-  console.log('server started on port ' , PORT);
+  console.log(`Server started on port ${PORT}`);
 });
 
 // view engine setup
@@ -21,16 +21,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({resave: true, saveUninitialized: true, secret: 'anyrandomstring'}));
 
 //functions:
-function wanttogoPoster(user, destination){
+function wanttogoPoster(user, destination, request){
 
   if (user === 'admin') {
     var tmp = [];
-    for(var i=0 ; i<req.session.wanttogo.length ; i++){
-      tmp = tmp.concat([req.session.wanttogo[i]]) ;
+    for(var i=0 ; i<request.session.wanttogo.length ; i++){
+      tmp = tmp.concat([request.session.wanttogo[i]]) ;
     }
     if(!tmp.includes(destination)){
       tmp = tmp.concat([destination]);
-      req.session.wanttogo = tmp;
+      request.session.wanttogo = tmp;
     }
     else{
       alert('Destination is already in your want-to-go list!');
@@ -64,10 +64,7 @@ function wanttogoPoster(user, destination){
           }
           else{
             alert('Destination is already in your want-to-go list!');
-          }
-
-          //db.collection('FirstCollection').updateOne({username: user},{ $set: { wanttogo: tmp } });
-          
+          }          
         }
       });                
     });
@@ -272,32 +269,32 @@ app.post('/register', function(req, res){
 });
 
 app.post('/wanttogoannapurna', function(req, res){ 
-  wanttogoPoster(req.session.username, "Annapurna");
+  wanttogoPoster(req.session.username, "Annapurna", req);
   res.redirect('annapurna');
 });
 
 app.post('/wanttogobali', function(req, res){ 
-  wanttogoPoster(req.session.username, "Bali");
+  wanttogoPoster(req.session.username, "Bali", req);
   res.redirect('bali');
 });
 
 app.post('/wanttogoinca', function(req, res){ 
-  wanttogoPoster(req.session.username, "Inca");
+  wanttogoPoster(req.session.username, "Inca", req);
   res.redirect('inca');
 });
 
 app.post('/wanttogoparis', function(req, res){ 
-  wanttogoPoster(req.session.username, "Paris");
+  wanttogoPoster(req.session.username, "Paris", req);
   res.redirect('paris');
 });
 
 app.post('/wanttogorome', function(req, res){ 
-  wanttogoPoster(req.session.username, "Rome");
+  wanttogoPoster(req.session.username, "Rome", req);
   res.redirect('rome');
 });
 
 app.post('/wanttogosantorini', function(req, res){ 
-  wanttogoPoster(req.session.username, "Santorini");
+  wanttogoPoster(req.session.username, "Santorini", req);
   res.redirect('santorini');
 });
 
