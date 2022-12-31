@@ -23,40 +23,55 @@ app.use(session({resave: true, saveUninitialized: true, secret: 'anyrandomstring
 //functions:
 function wanttogoPoster(user, destination){
 
-  MongoClient.connect("mongodb://127.0.0.1:27017/myDB", function (err, client) {
-    if(err) throw err;
-    var db = client.db('myDB');
-    var flag = false;
-    var index = 0;
-    db.collection('myCollection').find().toArray(function(err, results){
+  if (user === 'admin') {
+    var tmp = [];
+    for(var i=0 ; i<req.session.wanttogo.length ; i++){
+      tmp = tmp.concat([req.session.wanttogo[i]]) ;
+    }
+    if(!tmp.includes(destination)){
+      tmp = tmp.concat([destination]);
+      req.session.wanttogo = tmp;
+    }
+    else{
+      alert('Destination is already in your want-to-go list!');
+    }
+  }
+  else {
+    MongoClient.connect("mongodb://127.0.0.1:27017/myDB", function (err, client) {
       if(err) throw err;
-      for(var i=0; i<results.length; i++){
+      var db = client.db('myDB');
+      var flag = false;
+      var index = 0;
+      db.collection('myCollection').find().toArray(function(err, results){
+        if(err) throw err;
+        for(var i=0; i<results.length; i++){
 
-        if(results[i].username.localeCompare(user) == 0){
-          flag = true;
-          index = i;
-          break;
+          if(results[i].username.localeCompare(user) == 0){
+            flag = true;
+            index = i;
+            break;
+          }
         }
-      }
-      
-      if(flag == true){
-        var tmp = [] ;
-        for(var i=0 ; i<results[index].wanttogo.length ; i++){
-          tmp = tmp.concat([results[index].wanttogo[i]]) ;
-        }
-        if(!tmp.includes(destination)){
-          tmp = tmp.concat([destination]);
-          db.collection('myCollection').updateOne({username: user},{ $set: { wanttogo: tmp } });
-        }
-        else{
-          alert('Destination is already in your want-to-go list!');
-        }
-
-        //db.collection('FirstCollection').updateOne({username: user},{ $set: { wanttogo: tmp } });
         
-      }
-    });                
-  });
+        if(flag == true){
+          var tmp = [] ;
+          for(var i=0 ; i<results[index].wanttogo.length ; i++){
+            tmp = tmp.concat([results[index].wanttogo[i]]) ;
+          }
+          if(!tmp.includes(destination)){
+            tmp = tmp.concat([destination]);
+            db.collection('myCollection').updateOne({username: user},{ $set: { wanttogo: tmp } });
+          }
+          else{
+            alert('Destination is already in your want-to-go list!');
+          }
+
+          //db.collection('FirstCollection').updateOne({username: user},{ $set: { wanttogo: tmp } });
+          
+        }
+      });                
+    });
+  }
 }
 
 // app gets:
@@ -99,9 +114,11 @@ app.get('/wanttogo', function(req, res){
   else{
 
     var x = req.session.username ;
+    var z = [];
+    z = req.session.wanttogo;
 
     if(x === 'admin'){
-      res.render('wanttogo', {list: [] });
+      res.render('wanttogo', {list: z });
     }
     else{
       MongoClient.connect("mongodb://127.0.0.1:27017", function (err,client) {
@@ -180,6 +197,7 @@ app.post('/', function(req, res){
   var y = req.body.password;
   req.session.username = x;
   if (x === 'admin' && y === 'admin') {
+    req.session.wanttogo = [];
     res.redirect('home');
   }
   else {
