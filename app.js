@@ -300,23 +300,28 @@ app.post('/wanttogosantorini', function(req, res){
 
 app.post('/search', function(req, res){
   var x = req.body.Search ;
-  x = x.toLowerCase() ;
-  var arr = ["annapurna circuit", "bali island", "inca trail to machu picchu", "paris", "rome", "santorini island"];
-  var tmp = [];
-  for(var i = 0; i < arr.length; i++){
-    if(arr[i].includes(x))
-      tmp = tmp.concat([arr[i]]);
+  if (x === ''){
+    alert('Please type something in the search bar!');
   }
-  
-  for(var j = 0; j < tmp.length; j++){
-    const words = tmp[j].split(" ");
+  else{
+    x = x.toLowerCase() ;
+    var arr = ["annapurna circuit", "bali island", "inca trail to machu picchu", "paris", "rome", "santorini island"];
+    var tmp = [];
+    for(var i = 0; i < arr.length; i++){
+      if(arr[i].includes(x))
+        tmp = tmp.concat([arr[i]]);
+    }
+    
+    for(var j = 0; j < tmp.length; j++){
+      const words = tmp[j].split(" ");
 
-    for (let i = 0; i < words.length; i++) {
-        words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+      for (let i = 0; i < words.length; i++) {
+          words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+      }
+
+      tmp[j] = words.join(" ");
     }
 
-    tmp[j] = words.join(" ");
+    res.render('searchresults', {list: tmp}) ;
   }
-
-  res.render('searchresults', {list: tmp}) ;
 });
